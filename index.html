@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spotify - Web Player: Music for everyone</title>
+  <!-- Outfit Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- LEFT SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sidebar-box">
+      <a href="#" class="logo">
+        <i class="fa-brands fa-spotify"></i>
+        <span>Spotify</span>
+      </a>
+      <ul class="nav-list">
+        <li class="nav-item active" id="nav-home">
+          <a>
+            <i class="fa-solid fa-house"></i>
+            <span>Home</span>
+          </a>
+        </li>
+        <li class="nav-item" id="nav-search">
+          <a>
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <span>Search</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="library-panel">
+      <div class="library-header">
+        <div class="library-header-title" id="library-title-btn">
+          <i class="fa-solid fa-book-open"></i>
+          <span>Your Library</span>
+        </div>
+        <div class="library-actions">
+          <button class="library-btn" title="Create playlist"><i class="fa-solid fa-plus"></i></button>
+          <button class="library-btn" title="Show more"><i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      </div>
+
+      <div class="playlist-shortcuts">
+        <button class="shortcut-tag" id="shortcut-liked">Liked Songs</button>
+        <button class="shortcut-tag" id="shortcut-playlists">Playlists</button>
+        <button class="shortcut-tag" id="shortcut-albums">Albums</button>
+      </div>
+
+      <div class="library-list" id="library-items-container">
+        <!-- Liked Songs Playlist Item -->
+        <div class="library-item" id="lib-liked-playlist">
+          <div class="library-item-img liked">
+            <i class="fa-solid fa-heart"></i>
+          </div>
+          <div class="library-item-info">
+            <div class="library-item-name">Liked Songs</div>
+            <div class="library-item-meta">Playlist • <span id="library-liked-count">0</span> songs</div>
+          </div>
+        </div>
+
+        <!-- Custom Playlist Items (dynamically populated) -->
+        <div class="library-item" id="lib-tamil-hits">
+          <img class="library-item-img" src="assets/pavazha_malli.png" alt="Tamil Hits">
+          <div class="library-item-info">
+            <div class="library-item-name">Tamil Hits 2026</div>
+            <div class="library-item-meta">Playlist • Spotify</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN VIEWPORT -->
+  <main class="main-view" id="main-view-container">
+    <!-- Topbar Navigation -->
+    <header class="header">
+      <div class="navigation-arrows">
+        <button class="arrow-btn" id="arrow-back" title="Go back" disabled><i class="fa-solid fa-chevron-left"></i></button>
+        <button class="arrow-btn" id="arrow-forward" title="Go forward" disabled><i class="fa-solid fa-chevron-right"></i></button>
+        
+        <!-- Search bar input (Hidden unless on Search tab) -->
+        <div class="search-bar-container" id="search-input-container">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" class="search-input" id="global-search-input" placeholder="What do you want to play?" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="header-user">
+        <button class="upgrade-btn">Explore Premium</button>
+        <div class="user-profile">
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256&auto=format&fit=crop" class="profile-img" alt="User profile photo">
+          <span class="profile-name">VibeMaker</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Scrollable main panel container -->
+    <div class="main-content" id="main-scroll-content">
+
+      <!-- ================= HOME VIEW ================= -->
+      <section class="view-panel active-panel" id="view-home">
+        <!-- Hero Banner -->
+        <div class="hero" id="home-hero">
+          <div class="hero-overlay"></div>
+          <div class="hero-content">
+            <img src="assets/katchi_sera.png" class="hero-img" alt="Hero album art" id="hero-banner-img">
+            <div class="hero-info">
+              <span class="hero-badge">Featured Playlist</span>
+              <h1 class="hero-title" id="hero-banner-title">Katchi Sera & More</h1>
+              <p class="hero-description" id="hero-banner-desc">Sai Abhyankkar, Justin Prabhakaran, and your favorite Tamil independent sounds.</p>
+              <div class="hero-stats">
+                <i class="fa-brands fa-spotify"></i> Spotify • <span id="hero-track-count">5</span> songs, <span id="hero-total-duration">15 min 22 sec</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Play cards / playlists grid -->
+        <div class="section-container">
+          <div class="section-header">
+            <h2 class="section-title">Tamil Indie Essentials</h2>
+            <a class="show-all">Show all</a>
+          </div>
+          <div class="grid-cards" id="home-grid-cards">
+            <!-- Dynamically populated song cards -->
+          </div>
+        </div>
+
+        <!-- Full tracklist table -->
+        <div class="tracklist-container">
+          <div class="section-header">
+            <h2 class="section-title">Songs</h2>
+          </div>
+          <table class="track-table">
+            <thead>
+              <tr>
+                <th class="track-num-col">#</th>
+                <th>Title</th>
+                <th class="track-album-col">Album</th>
+                <th class="track-actions-col"><i class="fa-regular fa-clock"></i></th>
+              </tr>
+            </thead>
+            <tbody id="home-track-table-body">
+              <!-- Dynamically populated track rows -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================= SEARCH VIEW ================= -->
+      <section class="view-panel" id="view-search">
+        <div class="section-container">
+          <h2 class="section-title" style="margin-bottom: 20px;">Browse all</h2>
+          
+          <!-- Standard categories search container -->
+          <div class="grid-cards" id="search-categories" style="grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));">
+            <div class="music-card" style="background: linear-gradient(135deg, #e8115b, #bc5100); height: 180px; justify-content: space-between;">
+              <h3 style="font-weight: 800; font-size: 1.3rem;">Podcasts</h3>
+              <i class="fa-solid fa-microphone" style="align-self: flex-end; font-size: 3rem; opacity: 0.3;"></i>
+            </div>
+            <div class="music-card" style="background: linear-gradient(135deg, #1e3264, #a0c4ff); height: 180px; justify-content: space-between;">
+              <h3 style="font-weight: 800; font-size: 1.3rem;">New Releases</h3>
+              <i class="fa-solid fa-bullhorn" style="align-self: flex-end; font-size: 3rem; opacity: 0.3;"></i>
+            </div>
+            <div class="music-card" style="background: linear-gradient(135deg, #751717, #f72585); height: 180px; justify-content: space-between;">
+              <h3 style="font-weight: 800; font-size: 1.3rem;">Romance</h3>
+              <i class="fa-solid fa-heart" style="align-self: flex-end; font-size: 3rem; opacity: 0.3;"></i>
+            </div>
+            <div class="music-card" style="background: linear-gradient(135deg, #1db954, #004b23); height: 180px; justify-content: space-between;">
+              <h3 style="font-weight: 800; font-size: 1.3rem;">Indie Tamil</h3>
+              <i class="fa-solid fa-music" style="align-self: flex-end; font-size: 3rem; opacity: 0.3;"></i>
+            </div>
+            <div class="music-card" style="background: linear-gradient(135deg, #ffb703, #fb8500); height: 180px; justify-content: space-between;">
+              <h3 style="font-weight: 800; font-size: 1.3rem;">Party Mix</h3>
+              <i class="fa-solid fa-guitar" style="align-self: flex-end; font-size: 3rem; opacity: 0.3;"></i>
+            </div>
+          </div>
+
+          <!-- Interactive Search results table -->
+          <div class="tracklist-container hide" id="search-results-container">
+            <div class="section-header">
+              <h2 class="section-title">Search Results</h2>
+            </div>
+            <table class="track-table">
+              <thead>
+                <tr>
+                  <th class="track-num-col">#</th>
+                  <th>Title</th>
+                  <th class="track-album-col">Album</th>
+                  <th class="track-actions-col"><i class="fa-regular fa-clock"></i></th>
+                </tr>
+              </thead>
+              <tbody id="search-track-table-body">
+                <!-- Filtered search results populated here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= LIKED SONGS VIEW ================= -->
+      <section class="view-panel" id="view-liked">
+        <!-- Liked Playlist Hero -->
+        <div class="hero" style="background: linear-gradient(135deg, #5038a0, #121212);">
+          <div class="hero-overlay"></div>
+          <div class="hero-content">
+            <div class="hero-img liked" style="background: linear-gradient(135deg, #450af5, #c4efd9); display: flex; align-items: center; justify-content: center; color: white; font-size: 4rem; width: 160px; height: 160px; border-radius: 8px; box-shadow: 0 8px 30px rgba(0,0,0,0.7);">
+              <i class="fa-solid fa-heart"></i>
+            </div>
+            <div class="hero-info">
+              <span class="hero-badge">Playlist</span>
+              <h1 class="hero-title">Liked Songs</h1>
+              <p class="hero-description">Your personal collection of favorite tracks.</p>
+              <div class="hero-stats">
+                <i class="fa-solid fa-user"></i> VibeMaker • <span id="liked-track-count">0</span> songs
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tracklist-container">
+          <!-- Empty liked state -->
+          <div id="liked-empty-state" style="padding: 40px 0; text-align: center; color: var(--text-muted);">
+            <i class="fa-regular fa-heart" style="font-size: 3rem; margin-bottom: 16px; opacity: 0.5;"></i>
+            <p>Songs you like will appear here.</p>
+          </div>
+
+          <!-- Liked Songs list -->
+          <table class="track-table hide" id="liked-track-table">
+            <thead>
+              <tr>
+                <th class="track-num-col">#</th>
+                <th>Title</th>
+                <th class="track-album-col">Album</th>
+                <th class="track-actions-col"><i class="fa-regular fa-clock"></i></th>
+              </tr>
+            </thead>
+            <tbody id="liked-track-table-body">
+              <!-- Populated dynamically when songs are liked -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Lyrics Drawer overlay -->
+    <div class="lyrics-drawer" id="lyrics-panel">
+      <div class="lyrics-header">
+        <h3>Lyrics</h3>
+        <button class="util-btn" id="close-lyrics-btn" style="padding: 4px;"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="lyrics-content" id="lyrics-lines-container">
+        <!-- Dynamically rendered lyrics lines -->
+      </div>
+    </div>
+  </main>
+
+  <!-- BOTTOM PLAYER CONTROLLER -->
+  <footer class="player-bar">
+    <!-- Left: track metadata card -->
+    <div class="track-info">
+      <img src="assets/katchi_sera.png" class="player-img" alt="Playing track cover" id="player-track-img">
+      <div class="player-details">
+        <div class="player-title" id="player-track-title">Select a track</div>
+        <div class="player-artist" id="player-track-artist">To start listening</div>
+      </div>
+      <button class="player-like-btn" id="player-like-button" title="Save to Liked Songs">
+        <i class="fa-regular fa-heart"></i>
+      </button>
+      
+      <!-- Tiny active visualizer -->
+      <div class="visualizer-overlay" id="bar-visualizer">
+        <div class="vis-wave"></div>
+        <div class="vis-wave"></div>
+        <div class="vis-wave"></div>
+        <div class="vis-wave"></div>
+        <div class="vis-wave"></div>
+      </div>
+    </div>
+
+    <!-- Center: Playback controller deck -->
+    <div class="player-controls">
+      <div class="control-buttons">
+        <button class="ctrl-btn" id="btn-shuffle" title="Enable shuffle"><i class="fa-solid fa-shuffle"></i></button>
+        <button class="ctrl-btn" id="btn-prev" title="Previous track"><i class="fa-solid fa-backward-step"></i></button>
+        <button class="ctrl-btn play-pause-btn" id="btn-play" title="Play"><i class="fa-solid fa-play"></i></button>
+        <button class="ctrl-btn" id="btn-next" title="Next track"><i class="fa-solid fa-forward-step"></i></button>
+        <button class="ctrl-btn" id="btn-repeat" title="Enable repeat one"><i class="fa-solid fa-repeat"></i></button>
+      </div>
+
+      <div class="playback-bar">
+        <span class="progress-time" id="time-current">0:00</span>
+        <div class="slider-container" id="progress-seek-container" title="Seek song position">
+          <div class="slider-fill" id="progress-seek-fill"></div>
+          <div class="slider-thumb" id="progress-seek-thumb"></div>
+        </div>
+        <span class="progress-time" id="time-total">0:00</span>
+      </div>
+    </div>
+
+    <!-- Right: Utility tray -->
+    <div class="player-utilities">
+      <button class="util-btn" id="btn-lyrics-toggle" title="Lyrics"><i class="fa-solid fa-microphone"></i></button>
+      <button class="util-btn" id="btn-mute" title="Mute"><i class="fa-solid fa-volume-high"></i></button>
+      <div class="volume-bar">
+        <div class="slider-container" id="volume-seek-container" title="Adjust volume">
+          <div class="slider-fill" id="volume-seek-fill" style="width: 80%;"></div>
+          <div class="slider-thumb" id="volume-seek-thumb" style="left: 80%;"></div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Hidden HTML5 Audio Element -->
+  <audio id="main-audio-element" preload="auto"></audio>
+
+  <!-- Javascript Core Logic -->
+  <script src="script.js"></script>
+</body>
+</html>
