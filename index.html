@@ -13,6 +13,33 @@
 </head>
 <body>
 
+  <!-- LOGIN MODAL OVERLAY -->
+  <div class="login-modal-overlay" id="login-modal">
+    <div class="login-box">
+      <div class="login-logo">
+        <i class="fa-brands fa-spotify"></i>
+        <span>Spotify Clone</span>
+      </div>
+      <h2>Music for everyone.</h2>
+      <p>Log in to access your library and playlists.</p>
+      
+      <form id="login-form">
+        <div class="input-group">
+          <label for="login-username">Username</label>
+          <input type="text" id="login-username" placeholder="Type your username" required autocomplete="off">
+        </div>
+        <div class="input-group">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" placeholder="Type your password" required>
+        </div>
+        <button type="submit" class="login-submit-btn">Log In</button>
+      </form>
+      <div class="login-footer">
+        <p>Mock login: Use any username and password.</p>
+      </div>
+    </div>
+  </div>
+
   <!-- LEFT SIDEBAR -->
   <nav class="sidebar">
     <div class="sidebar-box">
@@ -95,10 +122,16 @@
 
       <div class="header-user">
         <button class="upgrade-btn">Explore Premium</button>
-        <div class="user-profile">
-          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256&auto=format&fit=crop" class="profile-img" alt="User profile photo">
-          <span class="profile-name">VibeMaker</span>
+      <div class="user-profile" id="user-profile-menu-btn">
+        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256&auto=format&fit=crop" class="profile-img" alt="User profile photo">
+        <span class="profile-name" id="user-display-name">VibeMaker</span>
+        <i class="fa-solid fa-caret-down" style="font-size: 0.75rem; margin-left: 4px;"></i>
+        
+        <!-- Dropdown menu -->
+        <div class="profile-dropdown" id="profile-dropdown-menu">
+          <a id="profile-logout-btn"><i class="fa-solid fa-arrow-right-from-bracket"></i> Log out</a>
         </div>
+      </div>
       </div>
     </header>
 
@@ -115,7 +148,7 @@
             <div class="hero-info">
               <span class="hero-badge">Featured Playlist</span>
               <h1 class="hero-title" id="hero-banner-title">Katchi Sera & More</h1>
-              <p class="hero-description" id="hero-banner-desc">Sai Abhyankkar, Justin Prabhakaran, and your favorite Tamil independent sounds.</p>
+              <p class="hero-description" id="hero-banner-desc">Sai Abhyankkar and your favorite Tamil independent sounds.</p>
               <div class="hero-stats">
                 <i class="fa-brands fa-spotify"></i> Spotify • <span id="hero-track-count">5</span> songs, <span id="hero-total-duration">15 min 22 sec</span>
               </div>
@@ -322,6 +355,79 @@
 
   <!-- Hidden HTML5 Audio Element -->
   <audio id="main-audio-element" preload="auto"></audio>
+
+  <!-- MOBILE BOTTOM NAVIGATION -->
+  <div class="mobile-nav-bar">
+    <div class="mobile-nav-item active" id="mob-nav-home">
+      <i class="fa-solid fa-house"></i>
+      <span>Home</span>
+    </div>
+    <div class="mobile-nav-item" id="mob-nav-search">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <span>Search</span>
+    </div>
+    <div class="mobile-nav-item" id="mob-nav-library">
+      <i class="fa-solid fa-book-open"></i>
+      <span>Library</span>
+    </div>
+  </div>
+
+  <!-- MOBILE FULLSCREEN PLAYER -->
+  <div class="mobile-fullscreen-player" id="mobile-fullscreen-player">
+    <div class="mobile-player-header">
+      <button class="player-close-btn" id="mob-player-close-btn">
+        <i class="fa-solid fa-chevron-down"></i>
+      </button>
+      <span class="player-header-title">PLAYING FROM PLAYLIST</span>
+      <button class="player-more-btn">
+        <i class="fa-solid fa-ellipsis-vertical"></i>
+      </button>
+    </div>
+    
+    <div class="mobile-player-body">
+      <div class="mobile-player-cover-container">
+        <img src="assets/katchi_sera.png" alt="Song cover" id="mob-player-cover">
+      </div>
+      
+      <div class="mobile-player-track-details">
+        <div class="mobile-player-info">
+          <h2 id="mob-player-title">Select a track</h2>
+          <p id="mob-player-artist">To start listening</p>
+        </div>
+        <button class="player-like-btn" id="mob-player-like-btn">
+          <i class="fa-regular fa-heart"></i>
+        </button>
+      </div>
+      
+      <div class="mobile-player-seekbar">
+        <div class="playback-bar" style="flex-direction: column; gap: 8px;">
+          <div class="slider-container" id="mob-progress-seek-container" style="height: 6px; width: 100%;">
+            <div class="slider-fill" id="mob-progress-seek-fill"></div>
+            <div class="slider-thumb" id="mob-progress-seek-thumb" style="display: block; width: 14px; height: 14px;"></div>
+          </div>
+          <div style="display: flex; justify-content: space-between; width: 100%; font-size: 0.75rem; color: var(--text-muted);">
+            <span id="mob-time-current">0:00</span>
+            <span id="mob-time-total">0:00</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="mobile-player-controls">
+        <button class="ctrl-btn" id="mob-btn-shuffle" style="font-size: 1.3rem;"><i class="fa-solid fa-shuffle"></i></button>
+        <button class="ctrl-btn" id="mob-btn-prev" style="font-size: 1.6rem;"><i class="fa-solid fa-backward-step"></i></button>
+        <button class="ctrl-btn play-pause-btn" id="mob-btn-play" style="font-size: 1.8rem; width: 64px; height: 64px;"><i class="fa-solid fa-play"></i></button>
+        <button class="ctrl-btn" id="mob-btn-next" style="font-size: 1.6rem;"><i class="fa-solid fa-forward-step"></i></button>
+        <button class="ctrl-btn" id="mob-btn-repeat" style="font-size: 1.3rem;"><i class="fa-solid fa-repeat"></i></button>
+      </div>
+
+      <div class="mobile-player-utilities">
+        <button class="util-btn" id="mob-btn-lyrics-toggle" style="font-size: 1.2rem; display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.05); padding: 8px 16px; border-radius: 100px; color: var(--text-base);">
+          <i class="fa-solid fa-microphone"></i>
+          <span>Lyrics</span>
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- Javascript Core Logic -->
   <script src="script.js"></script>

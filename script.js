@@ -3,7 +3,7 @@ const trackList = [
   {
     id: 1,
     title: "Pavazha Malli",
-    artist: "Justin Prabhakaran",
+    artist: "Sai Abhyankkar",
     album: "Pavazha Malli Single",
     duration: "3:42",
     src: "https://res.cloudinary.com/dqr5lupgw/video/upload/v1780123299/Pavazha_Malli_luxjk9.mp3",
@@ -53,7 +53,7 @@ const trackList = [
   {
     id: 3,
     title: "Pavazha Malli (Unplugged)",
-    artist: "Justin Prabhakaran",
+    artist: "Sai Abhyankkar",
     album: "Acoustic Sessions",
     duration: "2:57",
     src: "https://res.cloudinary.com/dqr5lupgw/video/upload/v1780123288/Pavazha_Malli_Unplugged_ku8gci.mp3",
@@ -75,7 +75,7 @@ const trackList = [
   {
     id: 4,
     title: "Vizhi Veekura",
-    artist: "Justin Prabhakaran",
+    artist: "Sai Abhyankkar",
     album: "Soulful Strings",
     duration: "2:49",
     src: "https://res.cloudinary.com/dqr5lupgw/video/upload/v1780123289/Vizhi_Veekura_ladvkd.mp3",
@@ -185,6 +185,7 @@ const arrowForward = document.getElementById('arrow-forward');
 
 // Initialize App
 function initApp() {
+  checkAuthentication();
   renderHomeSongs();
   setupEventListeners();
   loadTrack(currentTrackIndex, false);
@@ -290,6 +291,73 @@ function setupEventListeners() {
   setupSliderInteraction(progressSeekContainer, progressSeekFill, progressSeekThumb, handleSeek);
   setupSliderInteraction(volumeSeekContainer, volumeSeekFill, volumeSeekThumb, handleVolumeSeek);
 
+  // Mobile player seekbar
+  setupSliderInteraction(
+    document.getElementById('mob-progress-seek-container'),
+    document.getElementById('mob-progress-seek-fill'),
+    document.getElementById('mob-progress-seek-thumb'),
+    handleSeek
+  );
+
+  // Mobile Fullscreen play controls
+  document.getElementById('mob-btn-play').addEventListener('click', togglePlayPause);
+  document.getElementById('mob-btn-prev').addEventListener('click', playPreviousTrack);
+  document.getElementById('mob-btn-next').addEventListener('click', playNextTrack);
+  document.getElementById('mob-btn-shuffle').addEventListener('click', toggleShuffle);
+  document.getElementById('mob-btn-repeat').addEventListener('click', toggleRepeat);
+  document.getElementById('mob-btn-lyrics-toggle').addEventListener('click', toggleLyricsPanel);
+  document.getElementById('mob-player-like-btn').addEventListener('click', () => toggleLikeTrack(trackList[currentTrackIndex].id));
+
+  // Mobile bottom navigation panel triggers
+  document.getElementById('mob-nav-home').addEventListener('click', () => switchMobileTab('mob-nav-home', 'view-home'));
+  document.getElementById('mob-nav-search').addEventListener('click', () => switchMobileTab('mob-nav-search', 'view-search'));
+  document.getElementById('mob-nav-library').addEventListener('click', () => switchMobileTab('mob-nav-library', 'view-liked'));
+
+  // Expandable compact playbar footer triggers
+  document.querySelector('.player-bar').addEventListener('click', (e) => {
+    // If click was inside the play/pause button area, don't slide up the fullscreen player
+    const rect = document.querySelector('.player-utilities').getBoundingClientRect();
+    const clickedUtility = e.clientX >= rect.left && e.clientX <= rect.right;
+    
+    if (window.innerWidth <= 767 && !clickedUtility) {
+      document.getElementById('mobile-fullscreen-player').classList.add('active-overlay');
+    }
+  });
+
+  // Tapping play/pause pseudo-element button in the compact playbar on mobile
+  document.querySelector('.player-bar').addEventListener('click', (e) => {
+    const rect = document.querySelector('.player-utilities').getBoundingClientRect();
+    const clickedUtility = e.clientX >= rect.left && e.clientX <= rect.right;
+    
+    if (window.innerWidth <= 767 && clickedUtility) {
+      togglePlayPause();
+    }
+  });
+
+  document.getElementById('mob-player-close-btn').addEventListener('click', () => {
+    document.getElementById('mobile-fullscreen-player').classList.remove('active-overlay');
+  });
+
+  // Profile User Menu Toggle
+  const userMenuBtn = document.getElementById('user-profile-menu-btn');
+  const userMenuDropdown = document.getElementById('profile-dropdown-menu');
+  
+  userMenuBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    userMenuDropdown.classList.toggle('show-dropdown');
+  });
+  
+  // Log out button trigger
+  document.getElementById('profile-logout-btn').addEventListener('click', handleLogout);
+
+  // Close menus when clicking outside
+  document.addEventListener('click', () => {
+    userMenuDropdown.classList.remove('show-dropdown');
+  });
+
+  // Login form handler
+  document.getElementById('login-form').addEventListener('submit', handleLoginSubmit);
+
   // Keyboard controls
   document.addEventListener('keydown', (e) => {
     if (document.activeElement.tagName === 'INPUT') return;
@@ -308,6 +376,8 @@ function setupEventListeners() {
   audio.addEventListener('timeupdate', updatePlaybackProgress);
   audio.addEventListener('loadedmetadata', () => {
     timeTotal.textContent = formatTime(audio.duration);
+    const mobTimeTotal = document.getElementById('mob-time-total');
+    if (mobTimeTotal) mobTimeTotal.textContent = formatTime(audio.duration);
   });
   audio.addEventListener('ended', handleTrackEnded);
 
@@ -365,6 +435,25 @@ function loadTrack(index, autoplay = true) {
     playerLikeButton.innerHTML = `<i class="fa-regular fa-heart"></i>`;
   }
 
+  // Update mobile fullscreen player elements
+  const mobCover = document.getElementById('mob-player-cover');
+  const mobTitle = document.getElementById('mob-player-title');
+  const mobArtist = document.getElementById('mob-player-artist');
+  const mobLikeBtn = document.getElementById('mob-player-like-btn');
+  
+  if (mobCover) mobCover.src = track.cover;
+  if (mobTitle) mobTitle.textContent = track.title;
+  if (mobArtist) mobArtist.textContent = track.artist;
+  if (mobLikeBtn) {
+    if (likedTracks.includes(track.id)) {
+      mobLikeBtn.classList.add('liked');
+      mobLikeBtn.innerHTML = `<i class="fa-solid fa-heart"></i>`;
+    } else {
+      mobLikeBtn.classList.remove('liked');
+      mobLikeBtn.innerHTML = `<i class="fa-regular fa-heart"></i>`;
+    }
+  }
+
   // Load and compile lyrics list
   renderLyrics(track.lyrics);
 
@@ -374,6 +463,8 @@ function loadTrack(index, autoplay = true) {
       .then(() => {
         isPlaying = true;
         btnPlay.innerHTML = `<i class="fa-solid fa-pause"></i>`;
+        document.getElementById('mob-btn-play').innerHTML = `<i class="fa-solid fa-pause"></i>`;
+        document.querySelector('.player-bar').classList.add('playing-active');
         barVisualizer.classList.add('active-visualizer');
         toggleEqBars(true);
       })
@@ -383,6 +474,8 @@ function loadTrack(index, autoplay = true) {
   } else {
     isPlaying = false;
     btnPlay.innerHTML = `<i class="fa-solid fa-play"></i>`;
+    document.getElementById('mob-btn-play').innerHTML = `<i class="fa-solid fa-play"></i>`;
+    document.querySelector('.player-bar').classList.remove('playing-active');
     barVisualizer.classList.remove('active-visualizer');
     toggleEqBars(false);
   }
@@ -412,6 +505,8 @@ function togglePlayPause() {
     audio.pause();
     isPlaying = false;
     btnPlay.innerHTML = `<i class="fa-solid fa-play"></i>`;
+    document.getElementById('mob-btn-play').innerHTML = `<i class="fa-solid fa-play"></i>`;
+    document.querySelector('.player-bar').classList.remove('playing-active');
     barVisualizer.classList.remove('active-visualizer');
     toggleEqBars(false);
   } else {
@@ -419,6 +514,8 @@ function togglePlayPause() {
       .then(() => {
         isPlaying = true;
         btnPlay.innerHTML = `<i class="fa-solid fa-pause"></i>`;
+        document.getElementById('mob-btn-play').innerHTML = `<i class="fa-solid fa-pause"></i>`;
+        document.querySelector('.player-bar').classList.add('playing-active');
         barVisualizer.classList.add('active-visualizer');
         toggleEqBars(true);
       })
@@ -458,12 +555,16 @@ function playPreviousTrack() {
 function toggleShuffle() {
   isShuffle = !isShuffle;
   btnShuffle.classList.toggle('active', isShuffle);
+  const mobShuffle = document.getElementById('mob-btn-shuffle');
+  if (mobShuffle) mobShuffle.classList.toggle('active', isShuffle);
 }
 
 // Toggle Repeat
 function toggleRepeat() {
   isRepeat = !isRepeat;
   btnRepeat.classList.toggle('active', isRepeat);
+  const mobRepeat = document.getElementById('mob-btn-repeat');
+  if (mobRepeat) mobRepeat.classList.toggle('active', isRepeat);
 }
 
 // Handle song end trigger
@@ -498,6 +599,21 @@ function updatePlaybackProgress() {
     progressSeekFill.style.width = `${percent}%`;
     progressSeekThumb.style.left = `${percent}%`;
     timeCurrent.textContent = formatTime(audio.currentTime);
+
+    // Mobile seek bar update
+    const mobSeekFill = document.getElementById('mob-progress-seek-fill');
+    const mobSeekThumb = document.getElementById('mob-progress-seek-thumb');
+    const mobTimeCurrent = document.getElementById('mob-time-current');
+    
+    if (mobSeekFill) mobSeekFill.style.width = `${percent}%`;
+    if (mobSeekThumb) mobSeekThumb.style.left = `${percent}%`;
+    if (mobTimeCurrent) mobTimeCurrent.textContent = formatTime(audio.currentTime);
+
+    // Compact progress indicator update (top border bar)
+    const playerBar = document.querySelector('.player-bar');
+    if (playerBar) {
+      playerBar.style.setProperty('--mobile-progress-width', `${percent}%`);
+    }
 
     // Sync Active Lyric Line based on time
     highlightLyricsLine(audio.currentTime);
@@ -707,12 +823,25 @@ function toggleLikeTrack(trackId) {
   // Update player heart icon
   const currentTrack = trackList[currentTrackIndex];
   if (currentTrack.id === trackId) {
-    if (likedTracks.includes(trackId)) {
+    const isLiked = likedTracks.includes(trackId);
+    
+    if (isLiked) {
       playerLikeButton.classList.add('liked');
       playerLikeButton.innerHTML = `<i class="fa-solid fa-heart"></i>`;
     } else {
       playerLikeButton.classList.remove('liked');
       playerLikeButton.innerHTML = `<i class="fa-regular fa-heart"></i>`;
+    }
+    
+    const mobLikeBtn = document.getElementById('mob-player-like-btn');
+    if (mobLikeBtn) {
+      if (isLiked) {
+        mobLikeBtn.classList.add('liked');
+        mobLikeBtn.innerHTML = `<i class="fa-solid fa-heart"></i>`;
+      } else {
+        mobLikeBtn.classList.remove('liked');
+        mobLikeBtn.innerHTML = `<i class="fa-regular fa-heart"></i>`;
+      }
     }
   }
 }
@@ -940,6 +1069,48 @@ function highlightLyricsLine(currentTime) {
       });
     }
   }
+}
+
+// ================= AUTHENTICATION & MOBILE TAB SERVICES =================
+function checkAuthentication() {
+  const username = localStorage.getItem('spotify_session_username');
+  const loginModal = document.getElementById('login-modal');
+  const userDisplayName = document.getElementById('user-display-name');
+  
+  if (username) {
+    if (loginModal) loginModal.classList.add('hide-login');
+    if (userDisplayName) userDisplayName.textContent = username;
+  } else {
+    if (loginModal) loginModal.classList.remove('hide-login');
+  }
+}
+
+function handleLoginSubmit(e) {
+  e.preventDefault();
+  const usernameInput = document.getElementById('login-username');
+  const username = usernameInput.value.trim();
+  
+  if (username) {
+    localStorage.setItem('spotify_session_username', username);
+    checkAuthentication();
+  }
+}
+
+function handleLogout() {
+  localStorage.removeItem('spotify_session_username');
+  window.location.reload();
+}
+
+function switchMobileTab(tabId, viewId) {
+  // Toggle nav bar active classes
+  document.querySelectorAll('.mobile-nav-item').forEach(item => {
+    item.classList.remove('active');
+  });
+  const selectedTab = document.getElementById(tabId);
+  if (selectedTab) selectedTab.classList.add('active');
+
+  // Trigger base panel navigation switch
+  switchView(viewId);
 }
 
 // Run app init on DOM load
